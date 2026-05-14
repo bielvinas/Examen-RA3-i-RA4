@@ -2,6 +2,7 @@ package cat.inspla.ra3.reserves;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ServeiReserves {
@@ -46,35 +47,33 @@ public class ServeiReserves {
     /**
      * TODO RA4: aquest mètode funciona, però està fet expressament de manera poc eficient.
      * Cal optimitzar-lo utilitzant eines adequades del llenguatge Java.
+     * Explicació:
+     * El codi original feia servir un bubble sort manual, cosa que era molt poc optima i molt lenta. En canvi, el metode de sort() de java és molt més ràpid i eficient que el bubble sort manual.
      */
     public List<Reservable> obtenirRecursosOrdenatsPerNom() {
         List<Reservable> copia = new ArrayList<>(recursos);
-
-        for (int i = 0; i < copia.size(); i++) {
-            for (int j = 0; j < copia.size() - 1; j++) {
-                if (copia.get(j).getNom().compareToIgnoreCase(copia.get(j + 1).getNom()) > 0) {
-                    Reservable temporal = copia.get(j);
-                    copia.set(j, copia.get(j + 1));
-                    copia.set(j + 1, temporal);
-                }
-            }
-        }
-
+        copia.sort(Comparator.comparing(Reservable::getNom, String.CASE_INSENSITIVE_ORDER));
         return copia;
     }
 
     /**
      * TODO RA4: aquest mètode concatena Strings dins d'un bucle.
      * Cal optimitzar-lo sense canviar el resultat retornat.
+     * Explicació:
+     * El problema amb el codi antic és que els Strings a Java són immutables, és a dir, que si li afegeixes parts a un string en un bucle, doncs no s'està modificant el string existent, sino que es crea un de nou i això és molt poc optim per el programa. En canvi, fent servir el StringBuilder això no passa i és més optim a l'hora de executar el programa.
      */
     public String generarInformeRecursos() {
-        String informe = "";
+        StringBuilder informe = new StringBuilder();
 
         for (Reservable recurs : recursos) {
-            informe = informe + recurs.getNom() + " - " + recurs.getTipus() + " - "
-                    + (recurs.estaDisponible() ? "Disponible" : "Reservat") + System.lineSeparator();
+            informe.append(recurs.getNom())
+                    .append(" - ")
+                    .append(recurs.getTipus())
+                    .append(" - ")
+                    .append(recurs.estaDisponible() ? "Disponible" : "Reservat")
+                    .append(System.lineSeparator());
         }
 
-        return informe;
+        return informe.toString();
     }
 }
